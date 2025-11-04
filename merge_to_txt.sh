@@ -10,7 +10,16 @@ OUTPUT_FILE="$SCRIPT_DIR/alles.txt"
 > "$OUTPUT_FILE"
 
 # Durchsuche das Skriptverzeichnis direkt (kein backend/)
-find "$SCRIPT_DIR" -type f \( -name "*.md" -o -name "*.py" -o -name "*.txt" \) ! -name "alles.txt" | while read -r file; do
+find "$SCRIPT_DIR" -type f \( \
+  -name "*.md" -o \
+  -name "*.py" -o \
+  -name "*.txt" -o \
+  -name "*.jsx" -o \
+  -name "*.css" -o \
+  -name "*.js" -o \
+  -name "*.ts" -o \
+  -name "*.vb" \
+\) ! -name "alles.txt" | while read -r file; do
   echo "=== $file ===" >> "$OUTPUT_FILE"
   cat "$file" >> "$OUTPUT_FILE"
   echo -e "\n" >> "$OUTPUT_FILE"
