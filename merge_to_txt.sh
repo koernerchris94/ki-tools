@@ -5,9 +5,21 @@ OUTPUT_FILE="$SCRIPT_DIR/alles.txt"
 > "$OUTPUT_FILE"
 
 find "$SCRIPT_DIR" -type f \( \
-  -name "*.md" -o -name "*.py" -o -name "*.txt" -o \
-  -name "*.jsx" -o -name "*.css" -o -name "*.js" -o \
-  -name "*.ts" -o -name "*.vb" \
+  -name "*.conf" -o \
+  -name "*.css" -o \
+  -name "*.dockerignore" -o \
+  -name "*.gitignore" -o \
+  -name "*.html" -o \
+  -name "*.ini" -o \
+  -name "*.js" -o \
+  -name "*.json" -o \
+  -name "*.jsx" -o \
+  -name "*.md" -o \
+  -name "*.py" -o \
+  -name "*.ts" -o \
+  -name "*.txt" -o \
+  -name "*.vb" -o \
+  -name "*.yml" \
 \) ! -name "alles.txt" -print0 | while IFS= read -r -d '' file; do
   echo "=== $file ===" >> "$OUTPUT_FILE"
   cat "$file" >> "$OUTPUT_FILE"
