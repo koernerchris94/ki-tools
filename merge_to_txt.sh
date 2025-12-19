@@ -17,6 +17,7 @@ find "$SCRIPT_DIR" -type f \( \
   -name "*.md" -o \
   -name "*.py" -o \
   -name "*.ts" -o \
+  -name "*.tsx" -o \
   -name "*.txt" -o \
   -name "*.vb" -o \
   -name "*.vbproj" -o \
