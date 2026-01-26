@@ -21,6 +21,7 @@ find "$SCRIPT_DIR" -type f \( \
   -name "*.txt" -o \
   -name "*.vb" -o \
   -name "*.vbproj" -o \
+  -name "*.xml" -o \
   -name "*.yml" \
 \) ! -name "alles.txt" -print0 | while IFS= read -r -d '' file; do
   echo "=== $file ===" >> "$OUTPUT_FILE"
