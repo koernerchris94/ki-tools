@@ -23,6 +23,13 @@ find "$SCRIPT_DIR" -type f \( \
   -name "*.vbproj" -o \
   -name "*.xml" -o \
   -name "*.yml" \
+  -name "*.prisma" -o \
+  -name "*.lock" -o \
+  -name "*.yaml" -o \
+  -name "LICENSE" -o \
+  -name "Dockerfile" -o \
+  -name "*.mjs" -o \
+  -name "*.cjs" \
 \) ! -name "alles.txt" -print0 | while IFS= read -r -d '' file; do
   echo "=== $file ===" >> "$OUTPUT_FILE"
   cat "$file" >> "$OUTPUT_FILE"
