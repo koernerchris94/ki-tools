@@ -4,7 +4,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUTPUT_FILE="$SCRIPT_DIR/alles.txt"
 > "$OUTPUT_FILE"
 
-find "$SCRIPT_DIR" -type f \( \
+find "$SCRIPT_DIR" -type f \
+  -not -path '*/node_modules/*' \
+  -not -path '*/.git/*' \
+  -not -path '*/dist/*' \
+  -not -path '*/build/*' \
+  \( \
   -name "*.conf" -o \
   -name "*.css" -o \
   -name "*.dockerignore" -o \
