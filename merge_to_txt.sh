@@ -15,6 +15,7 @@ find "$SCRIPT_DIR" -type f \
   -not -path '*/build/*' \
   \( \
   -name "*.tex" -o \
+  -name "*.cls" -o \
   -name "*.conf" -o \
   -name "*.css" -o \
   -name "*.dockerignore" -o \
