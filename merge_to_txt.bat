@@ -1,19 +1,18 @@
 @echo off
-:: UTF-8 Codepage setzen, damit Umlaute und Sonderzeichen korrekt verarbeitet werden
+REM UTF-8 Codepage setzen
 chcp 65001 >nul
 
 set "SCRIPT_DIR=%~dp0"
-:: Backslash am Ende entfernen, um saubere relative Pfade zu berechnen
+REM Backslash am Ende entfernen
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 
 set "OUTPUT_FILE=%SCRIPT_DIR%\alles.txt"
-:: Ausgabedatei leeren/anlegen
 type nul > "%OUTPUT_FILE%"
 
 set "TMP_FILE=%TEMP%\filelist_%RANDOM%.txt"
 type nul > "%TMP_FILE%"
 
-:: 1. Dateien rekursiv finden, bestimmte Ordner und Ausgabedatei direkt ausschließen
+REM 1. Dateien finden
 for /f "delims=" %%F in ('dir /s /b /a-d "%SCRIPT_DIR%" ^| findstr /v /i /c:"\node_modules\\" /c:"\.git\\" /c:"\dist\\" /c:"\build\\" /c:"\alles.txt"') do (
     call :CheckFile "%%F"
 )
@@ -26,63 +25,57 @@ set "EXT=%~x1"
 set "NAME=%~nx1"
 set "MATCH=0"
 
-:: Überprüfung auf erlaubte Dateiendungen (.gitignore und .dockerignore werden in Batch als Endungen erkannt)
+REM Überprüfung Dateiendungen
 for %%A in (.tex .cls .conf .css .dockerignore .gitignore .html .ini .js .json .jsx .md .py .ts .tsx .txt .vb .vbproj .xml .yml .prisma .lock .yaml .mjs .cjs) do (
     if /I "%EXT%"=="%%A" set "MATCH=1"
 )
-:: Überprüfung auf exakte Dateinamen ohne Endung
+REM Überprüfung Dateinamen
 if /I "%NAME%"=="LICENSE" set "MATCH=1"
 if /I "%NAME%"=="Dockerfile" set "MATCH=1"
 
 if "%MATCH%"=="1" (
-    :: Delayed Expansion kurz aktivieren, um Sonderzeichen in Pfaden abzusichern
     setlocal enabledelayedexpansion
-    echo !FULL_PATH!>> "%TMP_FILE%"
+    >>"%TMP_FILE%" echo !FULL_PATH!
     endlocal
 )
 exit /b
 
 :ProcessFiles
-:: Gefundene Dateien alphabetisch sortieren
+REM Sortieren
 set "SORTED_TMP=%TEMP%\filelist_sorted_%RANDOM%.txt"
 sort "%TMP_FILE%" /o "%SORTED_TMP%"
 
-:: 2. Strukturverzeichnis erstellen
-echo ^<directory_structure^>>> "%OUTPUT_FILE%"
+REM 2. Strukturverzeichnis erstellen
+>>"%OUTPUT_FILE%" echo ^<directory_structure^>
 for /f "usebackq delims=" %%F in ("%SORTED_TMP%") do (
     set "FULL_PATH=%%F"
     setlocal enabledelayedexpansion
-    :: Relativen Pfad berechnen
     set "REL_PATH=!FULL_PATH:%SCRIPT_DIR%\=!"
-    :: Backslashes in Slashes umwandeln (entspricht dem Linux/Bash-Verhalten)
     set "REL_PATH=!REL_PATH:\=/!"
-    echo - !REL_PATH!>> "%OUTPUT_FILE%"
+    >>"%OUTPUT_FILE%" echo - !REL_PATH!
     endlocal
 )
-echo ^</directory_structure^>>> "%OUTPUT_FILE%"
-echo.>> "%OUTPUT_FILE%"
-echo.>> "%OUTPUT_FILE%"
+>>"%OUTPUT_FILE%" echo ^</directory_structure^>
+>>"%OUTPUT_FILE%" echo.
+>>"%OUTPUT_FILE%" echo.
 
-:: 3. Datei-Inhalte anhängen
-echo ^<file_contents^>>> "%OUTPUT_FILE%"
+REM 3. Datei-Inhalte anhängen
+>>"%OUTPUT_FILE%" echo ^<file_contents^>
 for /f "usebackq delims=" %%F in ("%SORTED_TMP%") do (
     set "FULL_PATH=%%F"
     setlocal enabledelayedexpansion
     set "REL_PATH=!FULL_PATH:%SCRIPT_DIR%\=!"
     set "REL_PATH=!REL_PATH:\=/!"
-    echo === !REL_PATH! ===>> "%OUTPUT_FILE%"
+    >>"%OUTPUT_FILE%" echo === !REL_PATH! ===
     endlocal
     
-    :: Dateiinhalt anfügen
     type "%%F" >> "%OUTPUT_FILE%"
     
-    :: Zeilenumbrüche zur Trennung
-    echo.>> "%OUTPUT_FILE%"
-    echo.>> "%OUTPUT_FILE%"
+    >>"%OUTPUT_FILE%" echo.
+    >>"%OUTPUT_FILE%" echo.
 )
-echo ^</file_contents^>>> "%OUTPUT_FILE%"
+>>"%OUTPUT_FILE%" echo ^</file_contents^>
 
-:: Temporäre Dateien aufräumen
 del "%TMP_FILE%"
 del "%SORTED_TMP%"
 
