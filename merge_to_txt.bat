@@ -26,7 +26,7 @@ set "NAME=%~nx1"
 set "MATCH=0"
 
 REM Überprüfung Dateiendungen
-for %%A in (.tex .cls .conf .css .dockerignore .gitignore .html .ini .js .json .jsx .md .py .ts .tsx .txt .vb .vbproj .xml .yml .prisma .lock .yaml .mjs .cjs) do (
+for %%A in (.tex .cls .conf .css .dockerignore .gitignore .html .ini .js .json .jsx .md .py .ts .tsx .txt .vb .vbproj .xml .yml .prisma .lock .yaml .mjs .cjs .xsd .wsdl) do (
     if /I "%EXT%"=="%%A" set "MATCH=1"
 )
 REM Überprüfung Dateinamen
