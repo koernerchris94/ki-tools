@@ -41,6 +41,8 @@ find "$SCRIPT_DIR" -type f \
   -name "Dockerfile" -o \
   -name "*.mjs" -o \
   -name "*.cjs" \
+  -name "*.wsdl" \
+  -name "*.xsd" \
   \) ! -name "alles.txt" -print0 > "$TMP_FILE"
 
 # Gefundene Dateien alphabetisch sortieren (sichert Konsistenz zwischen Struktur und Inhalt)
