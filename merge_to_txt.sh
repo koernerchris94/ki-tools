@@ -44,6 +44,7 @@ find "$SCRIPT_DIR" -type f \
   -name "*.wsdl" \
   -name "*.xsd" \
   -name "*.ps1" \
+  -name "*.csv" \
   \) ! -name "alles.txt" -print0 > "$TMP_FILE"
 
 # Gefundene Dateien alphabetisch sortieren (sichert Konsistenz zwischen Struktur und Inhalt)
