@@ -10,44 +10,35 @@ OUTPUT_FILE="$SCRIPT_DIR/alles.txt"
 # Temporäre Datei anlegen, um die Dateiliste sicher zwischenzuspeichern
 TMP_FILE=$(mktemp)
 
-# 1. Dateien finden und null-terminiert in temporäre Datei schreiben
-find "$SCRIPT_DIR" -type f \
-  -not -path '*/node_modules/*' \
-  -not -path '*/.git/*' \
-  -not -path '*/dist/*' \
-  -not -path '*/build/*' \
+echo "Lese Dateien und Ordner aus (Linux/macOS)..."
+
+# 1. Dateien finden (PFEILSCHNELL dank -prune) und in temporäre Datei schreiben
+find "$SCRIPT_DIR" \
   \( \
-  -name "*.tex" -o \
-  -name "*.cls" -o \
-  -name "*.conf" -o \
-  -name "*.css" -o \
-  -name "*.dockerignore" -o \
-  -name "*.gitignore" -o \
-  -name "*.html" -o \
-  -name "*.ini" -o \
-  -name "*.js" -o \
-  -name "*.json" -o \
-  -name "*.jsx" -o \
-  -name "*.md" -o \
-  -name "*.py" -o \
-  -name "*.ts" -o \
-  -name "*.tsx" -o \
-  -name "*.txt" -o \
-  -name "*.vb" -o \
-  -name "*.vbproj" -o \
-  -name "*.xml" -o \
-  -name "*.yml" -o \
-  -name "*.prisma" -o \
-  -name "*.lock" -o \
-  -name "*.yaml" -o \
-  -name "LICENSE" -o \
-  -name "Dockerfile" -o \
-  -name "*.mjs" -o \
-  -name "*.cjs" -o \
-  -name "*.wsdl" -o \
-  -name "*.xsd" -o \
-  -name "*.ps1" -o \
-  -name "*.csv" \
+     -name "node_modules" -o \
+     -name ".git" -o \
+     -name ".idea" -o \
+     -name ".vscode" -o \
+     -name ".next" -o \
+     -name "dist" -o \
+     -name "build" -o \
+     -name "venv" -o \
+     -name "coverage" \
+  \) -prune \
+  -o -type f \( \
+    -name "*.json" -o -name "*.xml" -o -name "*.yaml" -o -name "*.yml" -o \
+    -name "*.toml" -o -name "*.ini" -o -name "*.conf" -o -name "*.dockerignore" -o \
+    -name "*.gitignore" -o -name "Dockerfile" -o -name "LICENSE" -o \
+    -name "README.md" -o -name "CHANGELOG.md" -o -name "*.html" -o \
+    -name "*.css" -o -name "*.scss" -o -name "*.sass" -o -name "*.less" -o \
+    -name "*.svg" -o -name "*.js" -o -name "*.jsx" -o -name "*.mjs" -o \
+    -name "*.cjs" -o -name "*.ts" -o -name "*.tsx" -o -name "*.mts" -o \
+    -name "*.cts" -o -name "*.vue" -o -name "*.svelte" -o -name "*.py" -o \
+    -name "*.php" -o -name "*.go" -o -name "*.java" -o -name "*.cs" -o \
+    -name "*.sh" -o -name "*.sql" -o -name "*.prisma" -o -name "*.graphql" -o \
+    -name "*.vb" -o -name "*.vbproj" -o -name "*.txt" -o -name "*.lock" -o \
+    -name "*.tex" -o -name "*.cls" -o -name "*.bib" -o -name "*.csv" -o \
+    -name "*.wsdl" -o -name "*.xsd" -o -name "*.ps1" \
   \) ! -name "alles.txt" -print0 > "$TMP_FILE"
 
 # Gefundene Dateien alphabetisch sortieren (sichert Konsistenz zwischen Struktur und Inhalt)
@@ -75,7 +66,7 @@ echo "</file_contents>" >> "$OUTPUT_FILE"
 # Temporäre Datei aufräumen
 rm "$TMP_FILE"
 
-echo "Datei erfolgreich erstellt: $OUTPUT_FILE"
+echo "Fertig! (Gespeichert in $OUTPUT_FILE)"
 exit 0
 
 
@@ -97,8 +88,10 @@ type nul > "%OUTPUT_FILE%"
 set "TMP_FILE=%TEMP%\filelist_%RANDOM%.txt"
 type nul > "%TMP_FILE%"
 
-REM 1. Dateien finden
-for /f "delims=" %%F in ('dir /s /b /a-d "%SCRIPT_DIR%" ^| findstr /v /i /c:"\node_modules\\" /c:"\.git\\" /c:"\dist\\" /c:"\build\\" /c:"\alles.txt"') do (
+echo Lese Dateien und Ordner aus (Windows)...
+
+REM 1. Dateien finden (Ordner-Ausschlüsse aktualisiert für Performance)
+for /f "delims=" %%F in ('dir /s /b /a-d "%SCRIPT_DIR%" ^| findstr /v /i /c:"\node_modules\\" /c:"\.git\\" /c:"\.idea\\" /c:"\.vscode\\" /c:"\.next\\" /c:"\dist\\" /c:"\build\\" /c:"\venv\\" /c:"\coverage\\" /c:"\alles.txt"') do (
     call :CheckFile "%%F"
 )
 
@@ -110,13 +103,16 @@ set "EXT=%~x1"
 set "NAME=%~nx1"
 set "MATCH=0"
 
-REM Überprüfung Dateiendungen (Synchronisiert mit Bash-Skript)
-for %%A in (.tex .cls .conf .css .dockerignore .gitignore .html .ini .js .json .jsx .md .py .ts .tsx .txt .vb .vbproj .xml .yml .prisma .lock .yaml .mjs .cjs .xsd .wsdl .ps1 .csv) do (
+REM Überprüfung Dateiendungen (Erweiterte Liste, synchronisiert mit Bash)
+for %%A in (.json .xml .yaml .yml .toml .ini .conf .dockerignore .gitignore .html .css .scss .sass .less .svg .js .jsx .mjs .cjs .ts .tsx .mts .cts .vue .svelte .py .php .go .java .cs .sh .sql .prisma .graphql .vb .vbproj .txt .lock .tex .cls .bib .csv .wsdl .xsd .ps1) do (
     if /I "%EXT%"=="%%A" set "MATCH=1"
 )
-REM Überprüfung Dateinamen
-if /I "%NAME%"=="LICENSE" set "MATCH=1"
+
+REM Überprüfung Dateinamen (Exakte Treffer ohne Endung oder spezielle Dateien)
 if /I "%NAME%"=="Dockerfile" set "MATCH=1"
+if /I "%NAME%"=="LICENSE" set "MATCH=1"
+if /I "%NAME%"=="README.md" set "MATCH=1"
+if /I "%NAME%"=="CHANGELOG.md" set "MATCH=1"
 
 if "%MATCH%"=="1" (
     setlocal enabledelayedexpansion
@@ -164,6 +160,6 @@ for /f "usebackq delims=" %%F in ("%SORTED_TMP%") do (
 del "%TMP_FILE%"
 del "%SORTED_TMP%"
 
-echo Datei erfolgreich erstellt: %OUTPUT_FILE%
+echo Fertig! (Gespeichert in %OUTPUT_FILE%)
 pause
 exit /b
